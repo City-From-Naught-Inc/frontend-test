@@ -14,5 +14,10 @@ You will also see any lint errors in the console.
 
 ## Goal
 
-The goal of this exercise is to transform the current frontend to look like this:
-![alt text](public/goal.png "Title")
+The goal of this exercise is to transform the current frontend 
+![current state](public/current_state.png "Current State")
+
+
+to look like this:
+
+![goal](public/goal.png "Goal")

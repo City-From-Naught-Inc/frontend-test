@@ -38,6 +38,31 @@ interface CourseContents {
   id: string;
 }
 
+interface HistoricalMessage {
+  id: string;
+  question: string;
+  answer: string;
+  created_at: string;
+}
+
+const transformHistoricalMessages = (historicalMessages: HistoricalMessage[]): Message[] => {
+    let messageId = 1; // Starting ID for messages for simplicity, assuming no overlap in IDs is needed
+    return historicalMessages.flatMap((histMsg) => [
+        {
+            id: messageId++,
+            sender: "Student",
+            content: histMsg.question,
+            timestamp: histMsg.created_at
+        },
+        {
+            id: messageId++,
+            sender: "Professor",
+            content: histMsg.answer,
+            timestamp: histMsg.created_at
+        }
+    ]);
+}
+
 const ChatPage: React.FC = () => {
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [expandedSemester, setExpandedSemester] = useState<string | null>(null);
@@ -229,8 +254,21 @@ const ChatPage: React.FC = () => {
 
   const fetchMessages = async (courseId: string) => {
     try {
-      const response = await fetch(`/v1/courses/${courseId}/messages`);
-      const data: Message[] = await response.json();
+      const historicalMessages: HistoricalMessage[] = [
+          {
+              "answer": "It seems you're not asking a question, you're initiating a conversation. If you'd like to ask a question related to the provided context, I'll do my best to provide a concise and relevant answer.\n\nDocument 0: 2102.09761v3.pdf, page 8\nDocument 1: 2205.15476v1.pdf, page 15\nDocument 2: 2205.15476v1.pdf, page 34\nDocument 3: 2205.15476v1.pdf, page 18\nDocument 4: 2205.15476v1.pdf, page 32",
+              "created_at": "2024-09-30 21:29:40",
+              "id": "76e320e6-d819-412e-bd75-10a8d3355fa7",
+              "question": "hi"
+          },
+          {
+              "answer": "The papers seem to be about the results of a study examining the effectiveness of using analogy-based search and keyword-based search in generating creative ideas for research. The study involved participants who were asked to review papers and come up with ideas for research using both methods, and the results show that analogy-based search led to more novel ideas and creative adaptations compared to keyword-based search.\n\nDocument 0: 2205.15476v1.pdf, page 11\nDocument 1: 2205.15476v1.pdf, page 8\nDocument 2: 2205.15476v1.pdf, page 1\nDocument 3: 2205.15476v1.pdf, page 12\nDocument 4: 2205.15476v1.pdf, page 27",
+              "created_at": "2024-09-30 21:50:04",
+              "id": "401e9d15-e0da-4835-a3b8-bdb8907f813a",
+              "question": "what are your papers about?"
+          }
+      ]
+      const data = transformHistoricalMessages(historicalMessages);
       setMessages(data);
     } catch (error) {
       console.error('Failed to fetch messages:', error);
